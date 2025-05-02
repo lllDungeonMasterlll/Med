@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    server_name mmsafety.info www.mmsafety.info;
+
+    root /var/www/mmsafety;
+    index index.html index.htm;
+
+    access_log /var/log/nginx/mmsafety_access.log;
+    error_log /var/log/nginx/mmsafety_error.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
