@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Certificate / QR Generator + Editor</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 680px;
+    margin: 20px auto;
+    padding: 0 12px;
+    background:
+  linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+  url('background.png?v=20250612') no-repeat center center fixed;
+
+    background-size: cover;
+    color: #000;
+    animation: fadeInBody 2s ease-in;
+  }
+  @keyframes fadeInBody { from { opacity: 0 } to { opacity: 1 } }
+
+  header, section, footer {
+    padding: 20px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.85);
+    margin: 20px;
+    border-radius: 15px;
+    transition: box-shadow 0.3s ease;
+    animation: fadeInBlock 1s ease-in;
+  }
+  @keyframes fadeInBlock {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  header {
+    background-color: rgba(0, 119, 204, 0.8);
+    color: white;
+  }
+  header:hover, section:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+
+  /* --- стиль форми генератора --- */
+  .generator .row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .generator .row input {
+    flex: 1;
+  }
+  label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+  }
+  input, button {
+    font-size: 1rem;
+    border-radius: 4px;
+  }
+  input {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+  }
+  button {
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+  }
+  #submitBtn {
+    background: #0077cc;
+    color: #fff;
+    border-radius: 6px;
+    margin-top: 18px;
+  }
+  #submitBtn:hover {
+    background: #015fa5;
+  }
+  #deleteBtn {
+    background: #b00;
+    color: white;
+    margin-left: 10px;
+  }
+  #deleteBtn:hover {
+    background: #900;
+  }
+  #clearBtn {
+    background: #777;
+    color: white;
+    margin-left: 10px;
+  }
+  #clearBtn:hover {
+    background: #555;
+  }
+  #qr {
+    margin-top: 24px;
+    text-align: center;
+  }
+  #links a {
+    display: inline-block;
+    margin: 10px 10px 0 0;
+  }
+  #links code {
+    word-break: break-all;
+  }
+  .small {
+    font-size: 0.9em;
+    color: #555;
+  }
+
+/* ─────────  С П И С О К   С Е Р Т И Ф І К А Т І В  ───────── */
+
+section.cert-list{
+  /* вікно буде ~800 px, по центру, з падінгом */
+  width:   840px;              
+  max-width: 95vw;              
+  margin: 20px auto;            
+  max-height: 500px;
+  overflow: hidden;            
+  border-radius: 8px;
+ 
+}
+
+/* внутрішня прокрутка + прилипаюча шапка */
+.cert-list--scroll{
+  overflow: auto;               
+  max-height: 500px;
+}
+
+/* сама таблиця: фіксована сітка = синхронний thead/tbody  */
+.cert-list table{
+  border-collapse:collapse;
+  width: 100%;
+  min-width: 820px;             
+  table-layout:fixed;
+}
+.cert-list th,
+.cert-list td{
+  padding:8px;
+  border:1px solid #ccc;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* прилипаємо голову всередині прокручуваного div */
+.cert-list th{
+  background:#0077cc;
+  color:#fff;
+  position: sticky;
+  top: 0;
+  z-index:1;
+}
+
+/* фіксуємо конкретні ширини (за картинкою)  */
+.cert-list th:nth-child(1),
+.cert-list td:nth-child(1){ width:170px; }   /* № */
+.cert-list th:nth-child(2),
+.cert-list td:nth-child(2){ width:230px; }   /* Name, surname */
+.cert-list th:nth-child(3),
+.cert-list td:nth-child(3){ width:150px; }
+
+
+/* колонка ДІЇ — не обрізається, дві кнопки влазять */
+.cert-list td.actions{
+  overflow:visible;
+  white-space:nowrap;
+  min-width:220px;              
+}
+
+
+  .cert-list button {
+    margin-right: 6px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+  }
+  .edit-btn {
+    background: #0077cc;
+    color: #fff;
+    border: none;
+  }
+  .edit-btn:hover {
+    background: #005fa3;
+  }
+  .delete-btn {
+    background: #b00;
+    color: #fff;
+    border: none;
+  }
+  .delete-btn:hover {
+    background: #900;
+  }
+  #backToGenBtn {
+    background: #0077cc;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  #backToGenBtn:hover {
+    background: #005fa3;
+  }
+
+.drop-zone{
+  margin-top:8px;
+  padding:16px;
+  border:2px dashed #999;
+  border-radius:6px;
+  color:#666;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.drop-zone.dragover{
+  border-color:#0077cc;
+  color:#0077cc;
+}
+
+  
+</style>
+</head>
+<body>
+
+<header>
+  <h1>QR-сертифікати – генератор / редактор</h1>
+  <button id="showListBtn" style="margin-top:10px;padding:8px 20px;cursor:pointer;">Список сертифікатів</button>
+</header>
+
+<section class="generator">
+  <!-- ── Пошук ───────────────────────────────────────── -->
+  <div class="row">
+    <label class="small" style="flex:1.3">UID
+      <input id="uidInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false" />
+    </label>
+    <label class="small" style="flex:1">№ сертифіката
+      <input id="medInput" placeholder="наприклад 123/24" autocomplete="off" spellcheck="false" />
+    </label>
+    <button id="loadBtn">Load</button>
+  </div>
+
+  <!-- ── Форма ───────────────────────────────────────── -->
+  <form id="certForm">
+    <input type="hidden" name="uid" id="uidHidden" />
+
+    <label>№ of Medical examination
+      <input name="medNo" value="DP-" required maxlength="50" autocomplete="off" />
+    </label>
+
+    <label>Name, surname:
+     <input name="secondName" required maxlength="50" autocomplete="off" />
+   </label>
+
+   <label>Date of birth
+    <input name="dob" type="date" required />
+   </label>
+
+    <label>Photo (JPEG/PNG)
+     <input id="photoInput" name="photoFile" type="file"
+         accept="image/*">
+    </label>
+
+    <div id="dropZone" class="drop-zone">
+  Перетягніть фото сюди
+    </div>
+
+    <img id="preview" style="max-width:140px;margin-top:8px;display:none">
+
+    <label>Position
+      <input name="position" required maxlength="50" autocomplete="off" />
+    </label>
+
+    <label>Date of issue
+      <input name="issue" type="date" required />
+    </label>
+
+    <button type="submit" id="submitBtn">Generate</button>
+    <button type="button" id="deleteBtn" style="display:none">Delete</button>
+    <button type="button" id="clearBtn">Clear</button>
+  </form>
+
+  <div id="qr"></div>
+  <div id="links"></div>
+</section>
+
+<section class="cert-list" style="display:none;">
+  <button id="backToGenBtn">Назад до генератора</button>
+
+<div id="searchBar" style="margin:12px 0;text-align:left">
+  <input id="filterInput"
+         placeholder="№ або Name"
+         style="padding:6px 8px;width:230px;border:1px solid #ccc;border-radius:4px">
+  <button id="clearFilter"
+          style="padding:6px 12px;margin-left:4px;">Скинути</button>
+</div>
+
+  <div id="certListContainer"><p>Завантаження списку сертифікатів...</p></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+
+
+(() => {
+  const qs = s => document.querySelector(s);
+  const qrBox = qs('#qr');
+  const links = qs('#links');
+  const form = qs('#certForm');
+  const uidInput = qs('#uidInput');
+  const medInput = qs('#medInput');
+  const certListSection = qs('.cert-list');
+  const generatorSection = qs('.generator');
+  const certListContainer = qs('#certListContainer');
+
+const photoInput = qs('#photoInput');   // <input type="file">
+const previewImg = qs('#preview');      // <img id="preview">
+const dropZone = qs('#dropZone');
+
+function showPreview(file){
+  const img = document.getElementById('preview') || previewImg;
+  const r = new FileReader();
+  r.onload = e =>{
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(file);
+}
+
+['dragenter','dragover'].forEach(ev=>{
+  dropZone.addEventListener(ev,e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(ev=>{
+  dropZone.addEventListener(ev,e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove('dragover');
+  });
+});
+
+dropZone.addEventListener('drop',e=>{
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')){
+    showPreview(file);              
+    photoInput.value = '';           
+  }
+});
+
+/* клік по зоні відкриває стандартний вибір файла  */
+dropZone.onclick = ()=> photoInput.click();
+
+
+
+photoInput.onchange = () => {
+  const f = photoInput.files[0];
+  if (!f) return;                       
+
+  /* якщо <img id="preview"> вже видалили – створюємо заново */
+  let img = document.getElementById('preview');
+  if (!img) {
+    img = document.createElement('img');
+    img.id = 'preview';
+    img.style.maxWidth = '140px';
+    img.style.marginTop = '8px';
+    photoInput.after(img);              
+  }
+
+  const r = new FileReader();
+  r.onload = e => {
+    img.src = e.target.result;          
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(f);
+};
+
+
+  let currentUid = null;
+
+  // --- режим редагування
+  function setEditMode(on, uid = '') {
+    currentUid = on ? uid : null;
+    qs('#uidHidden').value = on ? uid : '';
+    qs('#submitBtn').textContent = on ? 'Save changes' : 'Generate';
+    qs('#deleteBtn').style.display = on ? 'inline-block' : 'none';
+  }
+
+function clearAll() {
+  form.reset();
+  form.elements.medNo.value = 'DP-';
+  uidInput.value = '';
+  medInput.value = '';
+  qrBox.innerHTML = '';
+  links.innerHTML = '';
+  setEditMode(false);
+
+  document.querySelectorAll('#preview').forEach(img => img.remove());
+
+  photoInput.value = '';                
+  links.dataset.prevPhoto = '';
+}
+
+  // --- завантаження JSON сертифікату за UID або мед№
+  async function loadCertificate(uid, medNo) {
+    let searchUid = uid;
+
+    if (!searchUid && medNo) {
+      try {
+        const res = await fetch(`/api/find_cert.php?medNo=${encodeURIComponent(medNo)}`);
+        const json = await res.json();
+        searchUid = json.uid || '';
+      } catch {
+        alert('Сертифікат не знайдено за номером');
+        return null;
+      }
+    }
+
+    if (!searchUid) {
+      alert('Введіть UID або № сертифіката');
+      return null;
+    }
+
+    try {
+      const res = await fetch(`/certs/${searchUid}.json?ts=${Date.now()}`, {cache: 'no-store'});
+      if (!res.ok) throw new Error();
+      const cert = await res.json();
+      return { cert, uid: searchUid };
+    } catch {
+      alert('Не вдалося завантажити сертифікат');
+      return null;
+      
+    }
+  }
+
+  // --- показати сертифікат у формі і QR
+  function displayCertificate(cert, uid) {
+    for (const [k, v] of Object.entries(cert)) {
+      const el = form.elements[k];
+      if (el) el.value = v;
+    }
+
+    // --- показуємо фото (якщо є) та запам'ятовуємо для submit ---
+      if (cert.photo) {
+      previewImg.src = cert.photo;
+      previewImg.style.display = 'block';
+      links.dataset.prevPhoto   = cert.photo;   
+    } else {
+      previewImg.style.display = 'none';
+      links.dataset.prevPhoto   = '';
+    }
+
+    setEditMode(true, uid);
+
+    const url = `https://mmsafety.info/verify.html?uid=${uid}`;
+    qrBox.innerHTML = '';
+    new QRCode(qrBox, { text: url, width: 200, height: 200 });
+    links.innerHTML = `<p class="small">Редагуємо сертифікат UID ${uid.slice(0, 8)}…</p>`;
+  }
+
+  // --- показати список усіх сертифікатів
+ async function showCertList () {
+  /* 1. ховаємо генератор, показуємо (поки невидиму) секцію списку */
+  generatorSection.style.display  = 'none';
+  qs('#filterInput').value = '';
+
+  certListSection.style.display   = 'block';
+  certListSection.style.visibility = 'hidden';     
+  certListContainer.innerHTML =
+    '<p>Завантаження списку сертифікатів...</p>';
+
+  try {
+    const res = await fetch('/api/list_certs.php', { cache:'no-store' });
+    if (!res.ok) throw new Error('Не вдалося завантажити список');
+    const list = await res.json();
+
+    list.sort((a,b)=>{
+  return new Date(b.issue || 0) - new Date(a.issue || 0);
+});
+
+    if (!list.length){
+      certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
+      certListSection.style.visibility = 'visible';   
+      return;
+    }
+
+    let html = `
+      <table>
+        <thead><tr>
+          <th>Date of issue</th>
+          <th>№ сертифіката</th>
+          <th>Name, surname</th>
+          <th>Дії</th>
+        </tr></thead><tbody>`;
+    list.forEach(cert=>{
+      html += `<tr data-uid="${cert.uid}">
+        <td>${cert.issue || '-'}</td>
+        <td>${cert.medNo || '-'}</td>
+        <td>${cert.name  || '-'}</td>
+        
+        <td class="actions">
+          <button class="edit-btn"   data-uid="${cert.uid}">Редагувати</button>
+          <button class="delete-btn" data-uid="${cert.uid}">Видалити</button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+    certListContainer.innerHTML =
+      `<div class="cert-list--scroll">${html}</div>`;
+
+    
+    certListSection.style.visibility = 'visible';
+
+    
+// --- фільтр за номером 
+const filterInput = qs('#filterInput');
+const clearBtn    = qs('#clearFilter');
+
+filterInput.oninput = () => applyFilter(filterInput.value.trim().toLowerCase());
+clearBtn.onclick    = () => { filterInput.value=''; applyFilter(''); };
+
+function applyFilter(query){
+  const q = query.toLowerCase();
+  certListContainer.querySelectorAll('tbody tr').forEach(row=>{
+    const med  = row.children[1].textContent.toLowerCase();  // №
+    const name = row.children[2].textContent.toLowerCase();  // Name, surname
+    row.style.display =
+      q && !med.includes(q) && !name.includes(q) ? 'none' : '';
+  });
+}
+
+      // --- привʼязуємо кнопки
+      certListContainer.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const uid = btn.dataset.uid;
+          const data = await loadCertificate(uid, '');
+          if (data) {
+            displayCertificate(data.cert, uid);
+            certListSection.style.display = 'none';
+            generatorSection.style.display = 'block';
+          }
+        };
+      });
+
+      certListContainer.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const uid = btn.dataset.uid;
+          const confirmText = prompt('Щоб видалити сертифікат, введіть слово "видалити"');
+          if (!confirmText || confirmText.toLowerCase() !== 'видалити') return;
+
+          try {
+            const r = await fetch('/api/delete_cert.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ uid })
+            });
+            const t = await r.text();
+            if (t !== 'ok') throw new Error();
+            alert('Сертифікат видалено');
+            showCertList(); 
+          } catch {
+            alert('❌ Не вдалося видалити (перевірте права папки /certs/)');
+          }
+        };
+      });
+    } catch (err) {
+      certListContainer.innerHTML = `<p style="color:red;">${err.message}</p>`;
+    }
+  }
+
+  // --- кнопка показу списку
+  qs('#showListBtn').addEventListener('click', () => {
+    showCertList();
+  });
+
+  // --- кнопка назад до генератора
+  qs('#backToGenBtn').addEventListener('click', () => {
+    certListSection.style.display = 'none';
+    generatorSection.style.display = 'block';
+    clearAll();
+  });
+
+  // --- кнопка очистити форму
+  qs('#clearBtn').addEventListener('click', clearAll);
+
+  // --- load (з пошуку)
+  qs('#loadBtn').addEventListener('click', async () => {
+    const uid = uidInput.value.trim();
+    const medNo = medInput.value.trim();
+    const data = await loadCertificate(uid, medNo);
+    if (data) {
+      displayCertificate(data.cert, data.uid);
+    }
+  });
+
+  // --- submit (створити / зберегти)
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+  
+    const data = Object.fromEntries(new FormData(form).entries());
+    const uid = currentUid ?? uuidv4();
+    data.uid = uid;
+  
+  /* ----- додаємо фото у JSON ----- */
+ if (previewImg.style.display === 'block' && previewImg.src){
+  data.photo = previewImg.src;       
+} else if (currentUid && links.dataset.prevPhoto) {
+    data.photo = links.dataset.prevPhoto;  
+  }
+
+    try {
+      const r = await fetch('/api/save_cert.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const txt = await r.text();
+      if (!r.ok || txt === 'duplicate') throw 'duplicate';
+    } catch (e) {
+      alert(e === 'duplicate'
+        ? 'Сертифікат з таким номером вже існує!'
+        : '❌ Помилка запису на сервері');
+      return;
+    }
+  
+    const url = `https://mmsafety.info/verify.html?uid=${uid}`;
+  
+    // Генеруємо QR і посилання завжди
+    qrBox.innerHTML = '';
+    new QRCode(qrBox, { text: url, width: 200, height: 200 });
+    await new Promise(res => setTimeout(res, 100));
+    const blob = await (await fetch(qrBox.querySelector('img').src)).blob();
+    links.innerHTML = `<a href="${URL.createObjectURL(blob)}" download="${uid}.png">Download&nbsp;QR</a>
+                       <p><strong>URL:</strong> <code>${url}</code></p>`;
+  
+    // Очищуємо форму і пошукові поля
+    form.reset();
+    uidInput.value = '';
+    medInput.value = '';
+  
+    // Якщо редагуємо — показуємо повідомлення про збереження
+    if (currentUid) {
+      links.innerHTML += `<p style="color:green">✅ Зміни збережено.</p>`;
+    }
+  
+    setEditMode(false);
+  });
+  
+  
+
+  // --- видалення сертифіката
+  qs('#deleteBtn').addEventListener('click', async () => {
+    if (!currentUid) return;
+    const c = prompt('Щоб видалити сертифікат, введіть слово "видалити"');
+    if (!c || c.toLowerCase() !== 'видалити') return;
+    try {
+      const r = await fetch('/api/delete_cert.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUid })
+      });
+      const t = await r.text();
+      if (t !== 'ok') throw 0;
+      alert('Сертифікат видалено');
+      clearAll();
+    } catch {
+      alert('❌ Не вдалося видалити (перевірте права папки /certs/)');
+    }
+  });
+
+  // --- очистити форму
+  function clearAll() {
+    form.reset();
+    uidInput.value = '';
+    medInput.value = '';
+    qrBox.innerHTML = '';
+    links.innerHTML = '';
+    setEditMode(false);
+  }
+
+  // --- UUID генератор
+  function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+
+  // початковий стан
+  setEditMode(false);
+})();
+</script>
+</body>
+</html>

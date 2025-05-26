@@ -1,5 +1,5 @@
 server {
-    listen 80;
+     listen 80;
     server_name mmsafety.info www.mmsafety.info;
 
     root /var/www/mmsafety;
@@ -11,4 +11,4 @@ server {
     location / {
         try_files $uri $uri/ =404;
     }
-}
+    }
