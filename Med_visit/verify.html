@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Certificate verification</title>
+
+<style>
+
+.c-photo{
+  float:right;          /* праворуч від тексту */
+  max-width:140px;
+  max-height:180px;
+  margin-left:20px;
+  border-radius:6px;
+  object-fit:cover;
+}
+  
+/* === загальний фон і анімація появи === */
+body{
+
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:0;
+  line-height:1.6;
+  background:
+  linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+  url('background.png?v=20250612') no-repeat center center fixed;
+
+  background-size:cover;
+  color:#000;
+  animation:fadeInBody 2s ease-in;
+
+  /* нове: вирівнювання картки точно по центру */
+  display:flex;
+  align-items:center;        /* по вертикалі */
+  justify-content:center;    /* по горизонталі */
+  min-height:100vh;          /* щоб зайняти всю висоту */
+}
+@keyframes fadeInBody{from{opacity:0}to{opacity:1}}
+
+/* === сама картка сертифіката === */
+section{
+  width:100%;
+  max-width:600px;
+  box-sizing:border-box;
+  padding:24px 32px;
+  background:rgba(255,255,255,.85);
+  border-radius:15px;
+  text-align:center;
+  animation:fadeInBlock 1s ease-in;
+  transition:box-shadow .3s;
+}
+section:hover{box-shadow:0 8px 16px rgba(0,0,0,.2)}
+@keyframes fadeInBlock{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+h2{margin-top:0}
+dl{margin:18px 0;text-align:left}
+dt{font-weight:bold}
+dd{margin:0 0 8px 0}
+.error{color:#b00;text-align:center}
+
+/* зелена плашка */
+.verified{
+  margin-top:24px;
+  padding:12px;
+  background:#32b643;
+  color:#fff;
+  border-radius:10px;
+  font-weight:bold;
+  letter-spacing:.5px;
+}
+
+/* підпис UID */
+.uid{font-size:.9em;color:#333}
+</style>
+</head>
+
+<body>
+
+
+<section id="card">
+  <h2>Certificate verification</h2>
+  <p id="status">Loading…</p>
+</section>
+
+<script>
+(async()=>{
+  const params = new URLSearchParams(location.search);
+  const uid=params.get('uid');
+  const card=document.getElementById('card');
+  const status=document.getElementById('status');
+  if(!uid){status.textContent='UID missing';return;}
+
+  try{
+    const res = await fetch(`./certs/${uid}.json?ts=${Date.now()}`, {cache:'no-store'}); // щоб не записувало в кеш і миттєво оновлювалось
+    if(!res.ok)throw new Error('not found');
+    const cert=await res.json();
+
+    card.innerHTML=`
+      <h2>Certificate № ${cert.medNo ?? cert.number ?? '-'}</h2>
+      ${cert.photo ? `<img src="${cert.photo}" class="c-photo">` : ''}
+      
+
+      <dl>
+        <dt>№ of Medical examination</dt><dd>${cert.medNo ?? '-'}</dd>
+        <dt>Name, Surname</dt><dd>${cert.secondName ?? '-'}</dd>
+        <dt>Position</dt><dd>${cert.position ?? '-'}</dd>
+        <dt>Date of birth</dt><dd>${cert.dob ?? '-'}</dd>
+        <dt>Date of issue</dt><dd>${cert.issue ?? '-'}</dd>
+      </dl>
+      
+      <div class="verified">✔ VERIFIED</div>`;
+  }catch(err){
+    status.outerHTML='<p class="error">Certificate not found</p>';
+  }
+})();
+</script>
+</body>
+</html>
