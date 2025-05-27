@@ -395,10 +395,11 @@
   // --- submit (створити / зберегти)
   form.addEventListener('submit', async e => {
     e.preventDefault();
+  
     const data = Object.fromEntries(new FormData(form).entries());
     const uid = currentUid ?? uuidv4();
     data.uid = uid;
-
+  
     try {
       const r = await fetch('/api/save_cert.php', {
         method: 'POST',
@@ -413,9 +414,9 @@
         : '❌ Помилка запису на сервері');
       return;
     }
-
+  
     const url = `https://mmsafety.info/verify.html?uid=${uid}`;
-    if (!currentUid) {
+    if (!currentUid) { // новий
       qrBox.innerHTML = '';
       new QRCode(qrBox, { text: url, width: 200, height: 200 });
       await new Promise(res => setTimeout(res, 100));
@@ -423,11 +424,16 @@
       links.innerHTML = `<a href="${URL.createObjectURL(blob)}" download="${uid}.png">Download&nbsp;QR</a>
                        <p><strong>URL:</strong> <code>${url}</code></p>`;
       clearAll();
-    } else {
+    } else { // редагування
       links.innerHTML = `<p style="color:green">✅ Зміни збережено.</p>`;
-      clearAll();
+      // не очищати qrBox!
+      form.reset();         // очищаємо тільки форму
+      uidInput.value = '';  // очищаємо пошукові поля
+      medInput.value = '';
+      setEditMode(false);
     }
   });
+  
 
   // --- видалення сертифіката
   qs('#deleteBtn').addEventListener('click', async () => {
