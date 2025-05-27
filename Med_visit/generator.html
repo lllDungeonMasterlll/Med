@@ -416,23 +416,28 @@
     }
   
     const url = `https://mmsafety.info/verify.html?uid=${uid}`;
-    if (!currentUid) { // новий
-      qrBox.innerHTML = '';
-      new QRCode(qrBox, { text: url, width: 200, height: 200 });
-      await new Promise(res => setTimeout(res, 100));
-      const blob = await (await fetch(qrBox.querySelector('img').src)).blob();
-      links.innerHTML = `<a href="${URL.createObjectURL(blob)}" download="${uid}.png">Download&nbsp;QR</a>
+  
+    // Генеруємо QR і посилання завжди
+    qrBox.innerHTML = '';
+    new QRCode(qrBox, { text: url, width: 200, height: 200 });
+    await new Promise(res => setTimeout(res, 100));
+    const blob = await (await fetch(qrBox.querySelector('img').src)).blob();
+    links.innerHTML = `<a href="${URL.createObjectURL(blob)}" download="${uid}.png">Download&nbsp;QR</a>
                        <p><strong>URL:</strong> <code>${url}</code></p>`;
-      clearAll();
-    } else { // редагування
-      links.innerHTML = `<p style="color:green">✅ Зміни збережено.</p>`;
-      // не очищати qrBox!
-      form.reset();         // очищаємо тільки форму
-      uidInput.value = '';  // очищаємо пошукові поля
-      medInput.value = '';
-      setEditMode(false);
+  
+    // Очищуємо форму і пошукові поля
+    form.reset();
+    uidInput.value = '';
+    medInput.value = '';
+  
+    // Якщо редагуємо — показуємо повідомлення про збереження
+    if (currentUid) {
+      links.innerHTML += `<p style="color:green">✅ Зміни збережено.</p>`;
     }
+  
+    setEditMode(false);
   });
+  
   
 
   // --- видалення сертифіката
