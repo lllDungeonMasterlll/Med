@@ -79,7 +79,7 @@ dd{margin:0 0 8px 0}
   if(!uid){status.textContent='UID missing';return;}
 
   try{
-    const res=await fetch(`./certs/${uid}.json`);
+    const res = await fetch(`./certs/${uid}.json?ts=${Date.now()}`, {cache:'no-store'}); // щоб не записувало в кеш і миттєво оновлювалось
     if(!res.ok)throw new Error('not found');
     const cert=await res.json();
 
