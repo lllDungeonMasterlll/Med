@@ -155,10 +155,15 @@ form.addEventListener('submit',async e=>{
     links.innerHTML=`<a href="${URL.createObjectURL(blob)}" download="${uid}.png">Download&nbsp;QR</a>
                      <p><strong>URL:</strong> <code>${url}</code></p>`;
     form.reset(); qs('#uidInput').value=''; qs('#medInput').value='';
-  }else{
-    links.innerHTML=`<p style="color:green">✅ Зміни збережено.</p>`;
+  } else {                           // редагування збереженого
+    links.innerHTML = `<p style="color:green">✅ Зміни збережено.</p>`;
+    form.reset();                    // очиcтка всіх полей
+    qs('#uidInput').value='';
+    qs('#medInput').value='';
+    qrBox.innerHTML='';              // прибирання QR 
   }
-  setEditMode(false);
+
+  setEditMode(false);                // повернутись у «режим genrate»
 });
 
 /* ──────────────────────────────────────── DELETE ──────────────────────────────────────── */
