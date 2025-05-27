@@ -124,7 +124,7 @@ qs('#loadBtn').addEventListener('click',async()=>{
   }else{alert('Введіть UID або № сертифіката');return;}
 
   try{
-    const res=await fetch(`/certs/${uid}.json`);
+    const res = await fetch(`/certs/${uid}.json?ts=${Date.now()}`, {cache:'no-store'}); // без всратого кешу 
     if(!res.ok)throw 0;
     const cert=await res.json();
     for(const [k,v] of Object.entries(cert)){const el=form.elements[k];if(el)el.value=v;}
