@@ -111,6 +111,17 @@
   }
 
   /* --- стиль списку --- */
+
+/* таб­лиця не роз’їжд­жає шапку */
+.cert-list table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.cert-list th, .cert-list td {
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* горизонтальний скрол, якщо дані ширші за екран */
+.cert-list { margin-top:20px; max-height:400px;
+             overflow-y:auto; overflow-x:auto; }
+
   .cert-list {
     margin-top: 20px;
     max-height: 400px;
@@ -217,6 +228,15 @@
 
 <section class="cert-list" style="display:none;">
   <button id="backToGenBtn">Назад до генератора</button>
+
+<div id="searchBar" style="margin:12px 0;text-align:left">
+  <input id="filterInput"
+         placeholder="Шукати № сертифіката…"
+         style="padding:6px 8px;width:230px;border:1px solid #ccc;border-radius:4px">
+  <button id="clearFilter"
+          style="padding:6px 12px;margin-left:4px;">Скинути</button>
+</div>
+
   <div id="certListContainer"><p>Завантаження списку сертифікатів...</p></div>
 </section>
 
@@ -301,6 +321,7 @@
   // --- показати список усіх сертифікатів
   async function showCertList() {
     generatorSection.style.display = 'none';
+    qs('#filterInput').value = '';
     certListSection.style.display = 'block';
     certListContainer.innerHTML = '<p>Завантаження списку сертифікатів...</p>';
 
@@ -328,7 +349,21 @@
       html += '</tbody></table>';
       certListContainer.innerHTML = html;
 
-      // привʼязуємо кнопки
+// --- фільтр за номером 
+const filterInput = qs('#filterInput');
+const clearBtn    = qs('#clearFilter');
+
+filterInput.oninput = () => applyFilter(filterInput.value.trim().toLowerCase());
+clearBtn.onclick    = () => { filterInput.value=''; applyFilter(''); };
+
+function applyFilter(query){
+  certListContainer.querySelectorAll('tbody tr').forEach(row=>{
+    const med = row.children[0].textContent.toLowerCase();
+    row.style.display = query && !med.includes(query) ? 'none' : '';
+  });
+}
+
+      // --- привʼязуємо кнопки
       certListContainer.querySelectorAll('.edit-btn').forEach(btn => {
         btn.onclick = async () => {
           const uid = btn.dataset.uid;
