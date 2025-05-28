@@ -113,14 +113,14 @@
   /* --- стиль списку --- */
 
 /* таб­лиця не роз’їжд­жає шапку */
-.cert-list table { width:100%; border-collapse:collapse; table-layout:fixed; }
-.cert-list th, .cert-list td {
+  .cert-list table { width:100%; border-collapse:collapse; table-layout:fixed; }
+  .cert-list th, .cert-list td {
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
+  }
 
 /* горизонтальний скрол, якщо дані ширші за екран */
-.cert-list { margin-top:20px; max-height:400px;
-             overflow-y:auto; overflow-x:auto; }
+  .cert-list { margin-top:20px; max-height:400px;
+   overflow-y:auto; overflow-x:auto; }
 
   .cert-list {
     margin-top: 20px;
@@ -176,6 +176,13 @@
   #backToGenBtn:hover {
     background: #005fa3;
   }
+
+  .cert-list td.actions {
+  overflow:visible;         /* показуємо все */
+  white-space:nowrap;       /* кнопки у рядок */
+  min-width:140px;          /* достатньо місця для 2-х кнопок */
+  }
+
 </style>
 </head>
 <body>
@@ -340,7 +347,7 @@
         html += `<tr>
           <td>${cert.medNo || '-'}</td>
           <td style="font-family: monospace;">${cert.uid.slice(0, 8)}…</td>
-          <td>
+           <td class="actions">
             <button class="edit-btn" data-uid="${cert.uid}">Редагувати</button>
             <button class="delete-btn" data-uid="${cert.uid}">Видалити</button>
           </td>
