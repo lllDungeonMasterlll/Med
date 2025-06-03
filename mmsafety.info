@@ -2,13 +2,15 @@ server {
     listen 80;
     server_name mmsafety.info www.mmsafety.info;
 
-    root /var/www/mmsafety;
-    index index.html index.htm;
-
     access_log /var/log/nginx/mmsafety_access.log;
-    error_log /var/log/nginx/mmsafety_error.log;
+    error_log  /var/log/nginx/mmsafety_error.log;
 
     location / {
-        try_files $uri $uri/ =404;
+        proxy_pass         http://127.0.0.1:3000;   # порт вашого PM2
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host $host;
+        proxy_cache_bypass $http_upgrade;
     }
 }
