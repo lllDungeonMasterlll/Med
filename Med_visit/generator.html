@@ -217,8 +217,14 @@
    </label>
 
    <label>Date of birth
-  <input name="dob" type="date" required />
+    <input name="dob" type="date" required />
    </label>
+
+    <label>Photo (JPEG/PNG)
+     <input id="photoInput" name="photoFile" type="file"
+         accept="image/*">
+    </label>
+    <img id="preview" style="max-width:140px;margin-top:8px;display:none">
 
     <label>Position
       <input name="position" required maxlength="50" autocomplete="off" />
@@ -264,6 +270,24 @@
   const generatorSection = qs('.generator');
   const certListContainer = qs('#certListContainer');
 
+const photoInput = qs('#photoInput');   // <input type="file">
+const previewImg = qs('#preview');      // <img id="preview">
+
+photoInput.onchange = () => {
+  const f = photoInput.files[0];
+  if (!f) {               // нічого не вибрано
+    previewImg.style.display = 'none';
+    return;
+  }
+  const r = new FileReader();
+  r.onload = e => {
+    previewImg.src = e.target.result;   // data:image/…
+    previewImg.style.display = 'block';
+  };
+  r.readAsDataURL(f);
+};
+
+
   let currentUid = null;
 
   // --- режим редагування
@@ -282,6 +306,11 @@
     qrBox.innerHTML = '';
     links.innerHTML = '';
     setEditMode(false);
+
+    previewImg.style.display = 'none';
+    previewImg.src = '';
+    links.dataset.prevPhoto = '';
+    photoInput.value = '';    // скидаємо <input type=file>
   }
 
   // --- завантаження JSON сертифікату за UID або мед№
@@ -312,6 +341,7 @@
     } catch {
       alert('Не вдалося завантажити сертифікат');
       return null;
+      
     }
   }
 
@@ -321,6 +351,17 @@
       const el = form.elements[k];
       if (el) el.value = v;
     }
+
+    // --- показуємо фото (якщо є) та запам'ятовуємо для submit ---
+      if (cert.photo) {
+      previewImg.src = cert.photo;
+      previewImg.style.display = 'block';
+      links.dataset.prevPhoto   = cert.photo;   // <- запам'ятали
+    } else {
+      previewImg.style.display = 'none';
+      links.dataset.prevPhoto   = '';
+    }
+
     setEditMode(true, uid);
 
     const url = `https://mmsafety.info/verify.html?uid=${uid}`;
@@ -446,6 +487,13 @@ function applyFilter(query){
     const uid = currentUid ?? uuidv4();
     data.uid = uid;
   
+  /* ----- додаємо фото у JSON ----- */
+  if (photoInput.files[0]) {               // вибрано новий файл
+    data.photo = previewImg.src;           // data:image/...
+  } else if (currentUid && links.dataset.prevPhoto) {
+    data.photo = links.dataset.prevPhoto;  // залишаємо попереднє фото
+  }
+
     try {
       const r = await fetch('/api/save_cert.php', {
         method: 'POST',

@@ -6,6 +6,16 @@
 <title>Certificate verification</title>
 
 <style>
+
+.c-photo{
+  float:right;          /* стає у праву колонку */
+  max-width:140px;
+  max-height:180px;
+  margin-left:20px;
+  border-radius:6px;
+  object-fit:cover;
+}
+
 /* === загальний фон і анімація появи === */
 body{
   font-family:Arial,sans-serif;
@@ -85,9 +95,11 @@ dd{margin:0 0 8px 0}
 
     card.innerHTML=`
       <h2>Certificate № ${cert.medNo ?? cert.number ?? '-'}</h2>
+      ${cert.photo ? `<img src="${cert.photo}" class="c-photo">` : ''}
       <dl>
         <dt>No of Medical examination</dt><dd>${cert.medNo ?? '-'}</dd>
-        <dt>Second name</dt><dd>${cert.secondName ?? '-'}</dd>
+        <dt>Name, surname</dt><dd>${cert.secondName ?? '-'}</dd>
+        <dt>Date of birth</dt><dd>${cert.dob ?? '-'}</dd>
         <dt>Position</dt><dd>${cert.position ?? '-'}</dd>
         <dt>Date of issue</dt><dd>${cert.issue ?? '-'}</dd>
       </dl>
