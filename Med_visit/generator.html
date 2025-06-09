@@ -387,10 +387,11 @@ photoInput.onchange = () => {
         return;
       }
 
-      let html = '<table><thead><tr><th>№ сертифіката</th><th>UID (короткий)</th><th>Дії</th></tr></thead><tbody>';
+      let html = '<table><thead><tr><th>№ сертифіката</th><th>Name, surname</th><th>UID (короткий)</th><th>Дії</th></tr></thead><tbody>';
       list.forEach(cert => {
         html += `<tr>
           <td>${cert.medNo || '-'}</td>
+          <td>${cert.name  || '-'}</td>
           <td style="font-family: monospace;">${cert.uid.slice(0, 8)}…</td>
            <td class="actions">
             <button class="edit-btn" data-uid="${cert.uid}">Редагувати</button>

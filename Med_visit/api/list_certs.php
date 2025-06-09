@@ -8,6 +8,7 @@ foreach (glob("$dir/*.json") as $file) {
     $list[] = [
       'uid' => $data['uid'] ?? basename($file, '.json'),
       'medNo' => $data['medNo'] ?? '',
+      'name'   => $data['secondName'] ?? '',
     ];
   }
 }
