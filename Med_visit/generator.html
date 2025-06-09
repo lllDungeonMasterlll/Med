@@ -272,7 +272,7 @@ section.cert-list{
 
 <div id="searchBar" style="margin:12px 0;text-align:left">
   <input id="filterInput"
-         placeholder="Шукати № сертифіката…"
+         placeholder="№ або Name"
          style="padding:6px 8px;width:230px;border:1px solid #ccc;border-radius:4px">
   <button id="clearFilter"
           style="padding:6px 12px;margin-left:4px;">Скинути</button>
@@ -458,9 +458,12 @@ filterInput.oninput = () => applyFilter(filterInput.value.trim().toLowerCase());
 clearBtn.onclick    = () => { filterInput.value=''; applyFilter(''); };
 
 function applyFilter(query){
+  const q = query.toLowerCase();
   certListContainer.querySelectorAll('tbody tr').forEach(row=>{
-    const med = row.children[0].textContent.toLowerCase();
-    row.style.display = query && !med.includes(query) ? 'none' : '';
+    const med  = row.children[0].textContent.toLowerCase();  // №
+    const name = row.children[1].textContent.toLowerCase();  // Name, surname
+    row.style.display =
+      q && !med.includes(q) && !name.includes(q) ? 'none' : '';
   });
 }
 
