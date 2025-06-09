@@ -417,7 +417,7 @@ photoInput.onchange = () => {
 
     if (!list.length){
       certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-      certListSection.style.visibility = 'visible';   // показуємо пусте
+      certListSection.style.display = 'block';
       return;
     }
 
@@ -446,7 +446,7 @@ photoInput.onchange = () => {
       `<div class="cert-list--scroll">${html}</div>`;
 
     
-    certListSection.style.visibility = 'visible';
+    certListSection.style.display = 'block';
 
     
 // --- фільтр за номером 
@@ -499,6 +499,7 @@ function applyFilter(query){
       });
     } catch (err) {
       certListContainer.innerHTML = `<p style="color:red;">${err.message}</p>`;
+      certListSection.style.display = 'block';
     }
   }
 
