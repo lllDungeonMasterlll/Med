@@ -9,6 +9,7 @@ foreach (glob("$dir/*.json") as $file) {
       'uid' => $data['uid'] ?? basename($file, '.json'),
       'medNo' => $data['medNo'] ?? '',
       'name'   => $data['secondName'] ?? '',
+      'issue'  => $data['issue']   ?? '',      // ← додано
     ];
   }
 }

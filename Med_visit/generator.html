@@ -159,6 +159,8 @@ section.cert-list{
 .cert-list td:nth-child(1){ width:170px; }   /* № */
 .cert-list th:nth-child(2),
 .cert-list td:nth-child(2){ width:230px; }   /* Name, surname */
+.cert-list th:nth-child(3),
+.cert-list td:nth-child(3){ width:150px; }
 
 
 /* колонка ДІЇ — не обрізається, дві кнопки влазять */
@@ -409,6 +411,10 @@ photoInput.onchange = () => {
     if (!res.ok) throw new Error('Не вдалося завантажити список');
     const list = await res.json();
 
+    list.sort((a,b)=>{
+  return new Date(b.issue || 0) - new Date(a.issue || 0);
+});
+
     if (!list.length){
       certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
       certListSection.style.visibility = 'visible';   // показуємо пусте
@@ -418,12 +424,14 @@ photoInput.onchange = () => {
     let html = `
       <table>
         <thead><tr>
+          <th>Date of issue</th>
           <th>№ сертифіката</th>
           <th>Name, surname</th>
           <th>Дії</th>
         </tr></thead><tbody>`;
     list.forEach(cert=>{
       html += `<tr data-uid="${cert.uid}">
+        <td>${cert.issue || '-'}</td>
         <td>${cert.medNo || '-'}</td>
         <td>${cert.name  || '-'}</td>
         
