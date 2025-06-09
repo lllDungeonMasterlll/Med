@@ -125,8 +125,8 @@ section.cert-list{
   position: relative;        /* нове */
   left: 50%;                 /* нове */
   transform: translateX(-50%); /* нове */
-   visibility:hidden;
-
+  visibility:hidden;
+  min-width:820px;
 }
 
 /* внутрішня прокрутка + прилипаюча шапка */
@@ -449,6 +449,7 @@ photoInput.onchange = () => {
     
     certListSection.style.visibility = 'visible';
 
+    
 // --- фільтр за номером 
 const filterInput = qs('#filterInput');
 const clearBtn    = qs('#clearFilter');
