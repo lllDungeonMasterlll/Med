@@ -125,6 +125,7 @@ section.cert-list{
   position: relative;        /* нове */
   left: 50%;                 /* нове */
   transform: translateX(-50%); /* нове */
+   visibility:hidden;
 
 }
 
@@ -400,38 +401,53 @@ photoInput.onchange = () => {
   }
 
   // --- показати список усіх сертифікатів
-  async function showCertList() {
-    generatorSection.style.display = 'none';
-    qs('#filterInput').value = '';
-    certListSection.style.display = 'block';
-    certListContainer.innerHTML = '<p>Завантаження списку сертифікатів...</p>';
+ async function showCertList () {
+  /* 1. ховаємо генератор, показуємо (поки невидиму) секцію списку */
+  generatorSection.style.display  = 'none';
+  qs('#filterInput').value = '';
 
-    try {
-      const res = await fetch('/api/list_certs.php', {cache: 'no-store'});
-      if (!res.ok) throw new Error('Не вдалося завантажити список');
-      const list = await res.json();
+  certListSection.style.display   = 'block';
+  certListSection.style.visibility = 'hidden';     // ← додано
+  certListContainer.innerHTML =
+    '<p>Завантаження списку сертифікатів...</p>';
 
-      if (!list.length) {
-        certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-        return;
-      }
+  try {
+    const res = await fetch('/api/list_certs.php', { cache:'no-store' });
+    if (!res.ok) throw new Error('Не вдалося завантажити список');
+    const list = await res.json();
 
-      let html = '<table><thead><tr><th>№ сертифіката</th><th>Name, surname</th><th>UID (короткий)</th><th>Дії</th></tr></thead><tbody>';
-      list.forEach(cert => {
-        html += `<tr>
-          <td>${cert.medNo || '-'}</td>
-          <td>${cert.name  || '-'}</td>
-          <td style="font-family: monospace;">${cert.uid.slice(0, 8)}…</td>
-           <td class="actions">
-            <button class="edit-btn" data-uid="${cert.uid}">Редагувати</button>
-            <button class="delete-btn" data-uid="${cert.uid}">Видалити</button>
-          </td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      certListContainer.innerHTML = html;
-      certListContainer.innerHTML =
+    if (!list.length){
+      certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
+      certListSection.style.visibility = 'visible';   // показуємо пусте
+      return;
+    }
+
+    let html = `
+      <table>
+        <thead><tr>
+          <th>№ сертифіката</th>
+          <th>Name, surname</th>
+          <th>UID (короткий)</th>
+          <th>Дії</th>
+        </tr></thead><tbody>`;
+    list.forEach(cert=>{
+      html += `<tr>
+        <td>${cert.medNo || '-'}</td>
+        <td>${cert.name  || '-'}</td>
+        <td style="font-family:monospace;">${cert.uid.slice(0,8)}…</td>
+        <td class="actions">
+          <button class="edit-btn"   data-uid="${cert.uid}">Редагувати</button>
+          <button class="delete-btn" data-uid="${cert.uid}">Видалити</button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+    certListContainer.innerHTML =
       `<div class="cert-list--scroll">${html}</div>`;
+
+    
+    certListSection.style.visibility = 'visible';
 
 // --- фільтр за номером 
 const filterInput = qs('#filterInput');
