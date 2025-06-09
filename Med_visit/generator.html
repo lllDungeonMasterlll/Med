@@ -110,58 +110,62 @@
     color: #555;
   }
 
-/* === список сертифікатів ========================================= */
+/* ─────────  С П И С О К   С Е Р Т И Ф І К А Т І В  ───────── */
 
-/* контейнер: ширше та з горизонтальним скролом */
-.cert-list{
-  margin-top:20px;
-  width:95%;               /* збільшили “вікно” */
-  max-width:900px;
-  max-height:500px;        /* за потреби → більше */
-  overflow-y:auto;
-  overflow-x:auto;         /* ⬅ появиться, якщо не влазить */
-  text-align:left;
+section.cert-list{
+  /* вікно буде ~800 px, по центру, з падінгом */
+  width:   840px;               /* за потреби змініть */
+  max-width: 95vw;              /* щоб не вилізало за екран */
+  margin: 20px auto;            /* ← центрування */
+  max-height: 500px;
+  overflow: hidden;             /* приховуємо власний скрол */
+  border-radius: 8px;
 }
 
-/* таблиця: фіксована сітка => шапка й тіло співпадають */
+/* внутрішня прокрутка + прилипаюча шапка */
+.cert-list--scroll{
+  overflow: auto;               /* саме тут скрол */
+  max-height: 500px;
+}
+
+/* сама таблиця: фіксована сітка = синхронний thead/tbody  */
 .cert-list table{
-  width:100%;
-  min-width:760px;         /* щоб кнопки точно вмістились */
   border-collapse:collapse;
-  table-layout:fixed;      /* було auto — тепер fixed */
+  width: 100%;
+  min-width: 820px;             /* ширина, щоб влізли кнопки */
+  table-layout:fixed;
 }
-
-/* клітини */
 .cert-list th,
 .cert-list td{
-  border:1px solid #ccc;
   padding:8px;
+  border:1px solid #ccc;
+  white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  white-space:nowrap;
 }
 
-/* шапка */
+/* прилипаємо голову всередині прокручуваного div */
 .cert-list th{
   background:#0077cc;
   color:#fff;
-  position:sticky;
-  top:0;
+  position: sticky;
+  top: 0;
+  z-index:1;
 }
 
-/* —– фіксовані ширини колонок —– */
+/* фіксуємо конкретні ширини (за картинкою)  */
 .cert-list th:nth-child(1),
-.cert-list td:nth-child(1){ width:170px; }   /* № сертифіката */
+.cert-list td:nth-child(1){ width:170px; }   /* № */
 .cert-list th:nth-child(2),
-.cert-list td:nth-child(2){ width:210px; }   /* Name, surname */
+.cert-list td:nth-child(2){ width:230px; }   /* Name, surname */
 .cert-list th:nth-child(3),
 .cert-list td:nth-child(3){ width:160px; }   /* UID */
 
-/* колонка Дії: місця під 2 кнопки */
+/* колонка ДІЇ — не обрізається, дві кнопки влазять */
 .cert-list td.actions{
   overflow:visible;
   white-space:nowrap;
-  min-width:200px;         /* ↑ було 140 → тепер 200 */
+  min-width:220px;              /* ← збільшили */
 }
 
 /* кнопки лишаються як були */
