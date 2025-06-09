@@ -406,8 +406,8 @@ photoInput.onchange = () => {
   generatorSection.style.display  = 'none';
   qs('#filterInput').value = '';
 
-   certListSection.style.display = 'none';
-
+  certListSection.style.display   = 'block';
+  certListSection.style.visibility = 'hidden';     // ← додано
   certListContainer.innerHTML =
     '<p>Завантаження списку сертифікатів...</p>';
 
@@ -418,7 +418,7 @@ photoInput.onchange = () => {
 
     if (!list.length){
       certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-      certListSection.style.display = 'block';   // показуємо навіть порожнє
+      certListSection.style.visibility = 'visible';   // показуємо пусте
       return;
     }
 
@@ -430,10 +430,6 @@ photoInput.onchange = () => {
           <th>UID (короткий)</th>
           <th>Дії</th>
         </tr></thead><tbody>`;
-
-    certListContainer.innerHTML =
-      `<div class="cert-list--scroll">${html}</div>`;
-
     list.forEach(cert=>{
       html += `<tr>
         <td>${cert.medNo || '-'}</td>
@@ -447,6 +443,10 @@ photoInput.onchange = () => {
     });
     html += '</tbody></table>';
 
+    certListContainer.innerHTML =
+      `<div class="cert-list--scroll">${html}</div>`;
+
+    
     certListSection.style.visibility = 'visible';
 
     
