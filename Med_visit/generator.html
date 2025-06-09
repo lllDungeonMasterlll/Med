@@ -113,22 +113,19 @@
 /* ─────────  С П И С О К   С Е Р Т И Ф І К А Т І В  ───────── */
 
 section.cert-list{
-  /* вікно буде ~800 px, по центру, з падінгом */
-  width:   840px;               /* за потреби змініть */
-  max-width: 95vw;              /* щоб не вилізало за екран */
-  margin: 20px auto;            /* ← центрування */
+  /* розміри, скрол, радіус залишаємо */
+  width: 840px;
+  max-width: 95vw;
   max-height: 500px;
-  overflow: hidden;             /* приховуємо власний скрол */
+  overflow: hidden;
   border-radius: 8px;
 
-/* ── центр по viewport ── */
-   visibility:hidden;
-  position: relative;        /* нове */
-  left: 50%;                 /* нове */
-  transform: translateX(-50%); /* нове */
- min-width:820px;
- visibility:visible;
- 
+  /* ---- центруємо всередині viewport ---- */
+  position: fixed;              /* булО relative */
+  top: 50%;                     /* по центру */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;                /* поверх Generator */
 }
 
 /* внутрішня прокрутка + прилипаюча шапка */
