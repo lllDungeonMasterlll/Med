@@ -113,19 +113,20 @@
 /* ─────────  С П И С О К   С Е Р Т И Ф І К А Т І В  ───────── */
 
 section.cert-list{
-  /* розміри, скрол, радіус залишаємо */
-  width: 840px;
-  max-width: 95vw;
-  max-height: 500px;
-  overflow: hidden;
-  border-radius: 8px;
+  width:840px;          /* або ширше/вужче, як зручно */
+  max-width:95vw;
+  max-height:500px;
+  overflow:hidden;
+  border-radius:8px;
 
-  /* ---- центруємо всередині viewport ---- */
-  position: fixed;              /* булО relative */
-  top: 50%;                     /* по центру */
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;                /* поверх Generator */
+  /* — модальне позиціонування — */
+  position:fixed;       /* було relative */
+  top:50%;              /* центр по Y */
+  left:50%;             /* центр по X */
+  transform:translate(-50%,-50%);  /* обидві координати */
+  z-index:1000;         /* поверх іншого контенту */
+
+  /* margin більше не потрібен */
 }
 
 /* внутрішня прокрутка + прилипаюча шапка */
