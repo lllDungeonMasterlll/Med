@@ -113,36 +113,10 @@
   /* --- стиль списку --- */
 
 /* таб­лиця не роз’їжд­жає шапку */
-  .cert-list table { width:100%; border-collapse:collapse; table-layout:fixed; }
+  .cert-list table { width:100%; border-collapse:collapse; table-layout:auto; }
   .cert-list th, .cert-list td {
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-
   }
-
-/* 2️⃣  стовпець № сертифіката */
-.cert-list th:nth-child(1),
-.cert-list td:nth-child(1){
-    width:150px;             /* або 140 — підберіть */
-}
-
-/* 3️⃣  Name, surname — трохи ширший */
-.cert-list th:nth-child(2),
-.cert-list td:nth-child(2){
-    width:200px;             /* якщо треба, змініть */
-}
-
-/* 4️⃣  UID – лишаємо автоматичну (обрізаємо з … ) */
-.cert-list th:nth-child(3),
-.cert-list td:nth-child(3){
-    width:160px;
-}
-
-/* 5️⃣  колонка Дії — мінімум під дві кнопки */
-.cert-list td.actions{
-    overflow:visible;
-    white-space:nowrap;
-    min-width:180px;         /* або 200 — за потреби */
-}
 
 /* горизонтальний скрол, якщо дані ширші за екран */
   .cert-list { margin-top:20px; max-height:400px;
@@ -206,7 +180,7 @@
   .cert-list td.actions {
   overflow:visible;         /* показуємо все */
   white-space:nowrap;       /* кнопки у рядок */
-  min-width:180px;          /* достатньо місця для 2-х кнопок */
+  min-width:140px;          /* достатньо місця для 2-х кнопок */
   }
 
 </style>
