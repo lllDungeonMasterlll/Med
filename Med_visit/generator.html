@@ -402,26 +402,30 @@ photoInput.onchange = () => {
 
   // --- показати список усіх сертифікатів
  async function showCertList () {
-  /* 1. ховаємо генератор, показуємо (поки невидиму) секцію списку */
-  generatorSection.style.display  = 'none';
+  /* 1. ховаємо генератор, зупиняємо попередній фільтр */
+  generatorSection.style.display = 'none';
   qs('#filterInput').value = '';
 
-  certListSection.style.display   = 'block';
-  certListSection.style.visibility = 'hidden';     // ← додано
+  /* 2. повністю приховуємо секцію списку */
+  certListSection.style.display = 'none';
   certListContainer.innerHTML =
     '<p>Завантаження списку сертифікатів...</p>';
 
   try {
-    const res = await fetch('/api/list_certs.php', { cache:'no-store' });
+    /* --- запит списку --- */
+    const res  = await fetch('/api/list_certs.php', { cache:'no-store' });
     if (!res.ok) throw new Error('Не вдалося завантажити список');
     const list = await res.json();
 
+    /* --- якщо порожньо --- */
     if (!list.length){
-      certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-      certListSection.style.visibility = 'visible';   // показуємо пусте
+      certListContainer.innerHTML =
+        '<p>Сертифікатів не знайдено.</p>';
+      certListSection.style.display = 'block';   // показуємо вікно
       return;
     }
 
+    /* --- будуємо HTML таблиці --- */
     let html = `
       <table>
         <thead><tr>
@@ -430,7 +434,7 @@ photoInput.onchange = () => {
           <th>UID (короткий)</th>
           <th>Дії</th>
         </tr></thead><tbody>`;
-    list.forEach(cert=>{
+    list.forEach(cert => {
       html += `<tr>
         <td>${cert.medNo || '-'}</td>
         <td>${cert.name  || '-'}</td>
@@ -443,11 +447,21 @@ photoInput.onchange = () => {
     });
     html += '</tbody></table>';
 
+    /* --- вставляємо у контейнер --- */
     certListContainer.innerHTML =
       `<div class="cert-list--scroll">${html}</div>`;
 
-    
-    certListSection.style.visibility = 'visible';
+    /* --- прив'язуємо обробники edit / delete (як раніше) --- */
+    certListContainer.querySelectorAll('.edit-btn').forEach(btn=>{
+      btn.onclick = async () => { /* ... */ };
+    });
+    certListContainer.querySelectorAll('.delete-btn').forEach(btn=>{
+      btn.onclick = async () => { /* ... */ };
+    });
+
+    /* --- показуємо готове вікно --- */
+    certListSection.style.display = 'block';
+
 
     
 // --- фільтр за номером 
@@ -499,7 +513,8 @@ function applyFilter(query){
         };
       });
     } catch (err) {
-      certListContainer.innerHTML = `<p style="color:red;">${err.message}</p>`;
+      certListContainer.innerHTML = `<p style="color:red;">${err.message}</p>`
+      certListSection.style.display = 'block';
     }
   }
 
