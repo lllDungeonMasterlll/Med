@@ -406,7 +406,7 @@ photoInput.onchange = () => {
   generatorSection.style.display  = 'none';
   qs('#filterInput').value = '';
 
-  certListSection.style.display   = 'block';
+  certListSection.style.display   = 'none';
   certListSection.style.visibility = 'hidden';     // ← додано
   certListContainer.innerHTML =
     '<p>Завантаження списку сертифікатів...</p>';
@@ -447,7 +447,7 @@ photoInput.onchange = () => {
       `<div class="cert-list--scroll">${html}</div>`;
 
     
-    certListSection.style.visibility = 'visible';
+     certListSection.style.display = 'block';
 
     
 // --- фільтр за номером 
