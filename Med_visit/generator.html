@@ -159,8 +159,7 @@ section.cert-list{
 .cert-list td:nth-child(1){ width:170px; }   /* № */
 .cert-list th:nth-child(2),
 .cert-list td:nth-child(2){ width:230px; }   /* Name, surname */
-.cert-list th:nth-child(3),
-.cert-list td:nth-child(3){ width:160px; }   /* UID */
+
 
 /* колонка ДІЇ — не обрізається, дві кнопки влазять */
 .cert-list td.actions{
@@ -421,14 +420,13 @@ photoInput.onchange = () => {
         <thead><tr>
           <th>№ сертифіката</th>
           <th>Name, surname</th>
-          <th>UID (короткий)</th>
           <th>Дії</th>
         </tr></thead><tbody>`;
     list.forEach(cert=>{
-      html += `<tr>
+      html += `<tr data-uid="${cert.uid}">
         <td>${cert.medNo || '-'}</td>
         <td>${cert.name  || '-'}</td>
-        <td style="font-family:monospace;">${cert.uid.slice(0,8)}…</td>
+        
         <td class="actions">
           <button class="edit-btn"   data-uid="${cert.uid}">Редагувати</button>
           <button class="delete-btn" data-uid="${cert.uid}">Видалити</button>
