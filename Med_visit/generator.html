@@ -204,12 +204,7 @@ section.cert-list{
     background: #005fa3;
   }
 
-  .cert-list td.actions {
-  overflow:visible;         /* показуємо все */
-  white-space:nowrap;       /* кнопки у рядок */
-  min-width:140px;          /* достатньо місця для 2-х кнопок */
-  }
-
+  
 </style>
 </head>
 <body>
@@ -428,6 +423,8 @@ photoInput.onchange = () => {
       });
       html += '</tbody></table>';
       certListContainer.innerHTML = html;
+      certListContainer.innerHTML =
+      `<div class="cert-list--scroll">${html}</div>`;
 
 // --- фільтр за номером 
 const filterInput = qs('#filterInput');
