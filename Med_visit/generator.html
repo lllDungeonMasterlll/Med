@@ -125,7 +125,7 @@ section.cert-list{
   position: relative;        /* нове */
   left: 50%;                 /* нове */
   transform: translateX(-50%); /* нове */
-  min-width:820px;
+ min-width:820px;
 }
 
 /* внутрішня прокрутка + прилипаюча шапка */
@@ -417,7 +417,7 @@ photoInput.onchange = () => {
 
     if (!list.length){
       certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-      certListSection.style.display = 'block';
+      certListSection.style.visibility = 'visible';   // показуємо пусте
       return;
     }
 
@@ -446,7 +446,7 @@ photoInput.onchange = () => {
       `<div class="cert-list--scroll">${html}</div>`;
 
     
-    certListSection.style.display = 'block';
+    certListSection.style.visibility = 'visible';
 
     
 // --- фільтр за номером 
@@ -499,7 +499,6 @@ function applyFilter(query){
       });
     } catch (err) {
       certListContainer.innerHTML = `<p style="color:red;">${err.message}</p>`;
-      certListSection.style.display = 'block';
     }
   }
 
