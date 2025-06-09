@@ -116,32 +116,32 @@
   .cert-list table{
     width:100%;
     border-collapse:collapse;
-    table-layout:fixed;      /* знову fixed — колонки синхронні */
+    table-layout:fixed;     
 }
 
-/* 2️⃣  стовпець № сертифіката */
+
 .cert-list th:nth-child(1),
 .cert-list td:nth-child(1){
-    width:150px;             /* або 140 — підберіть */
+    width:150px;            
 }
 
-/* 3️⃣  Name, surname — трохи ширший */
+
 .cert-list th:nth-child(2),
 .cert-list td:nth-child(2){
-    width:200px;             /* якщо треба, змініть */
+    width:200px;           
 }
 
-/* 4️⃣  UID – лишаємо автоматичну (обрізаємо з … ) */
+
 .cert-list th:nth-child(3),
 .cert-list td:nth-child(3){
     width:160px;
 }
 
-/* 5️⃣  колонка Дії — мінімум під дві кнопки */
+
 .cert-list td.actions{
     overflow:visible;
     white-space:nowrap;
-    min-width:180px;         /* або 200 — за потреби */
+    min-width:180px;     
 }
 
 /* горизонтальний скрол, якщо дані ширші за екран */
