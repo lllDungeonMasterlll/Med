@@ -237,7 +237,7 @@ section.cert-list{
     <input type="hidden" name="uid" id="uidHidden" />
 
     <label>№ of Medical examination
-      <input name="medNo" required maxlength="50" autocomplete="off" />
+      <input name="medNo" value="DP-" required maxlength="50" autocomplete="off" />
     </label>
 
     <label>Name, surname:
@@ -329,6 +329,7 @@ photoInput.onchange = () => {
   // --- очистити форму і поля пошуку
   function clearAll() {
     form.reset();
+    form.elements.medNo.value = 'DP-';
     uidInput.value = '';
     medInput.value = '';
     qrBox.innerHTML = '';
