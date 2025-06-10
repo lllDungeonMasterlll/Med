@@ -109,7 +109,7 @@ dd{margin:0 0 8px 0}
         <dt>Date of birth</dt><dd>${cert.dob ?? '-'}</dd>
         <dt>Date of issue</dt><dd>${cert.issue ?? '-'}</dd>
       </dl>
-      <p class="uid"><strong>UID:</strong> ${cert.uid}</p>
+      
       <div class="verified">✔ VERIFIED</div>`;
   }catch(err){
     status.outerHTML='<p class="error">Certificate not found</p>';
