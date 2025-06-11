@@ -340,9 +340,7 @@ function clearAll() {
   links.innerHTML = '';
   setEditMode(false);
 
-  /* видаляємо <img id="preview">, якщо існує */
-  const img = document.getElementById('preview');
-  if (img) img.remove();
+  document.querySelectorAll('#preview').forEach(img => img.remove());
 
   photoInput.value = '';                // очищаємо поле file
   links.dataset.prevPhoto = '';
