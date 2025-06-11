@@ -323,22 +323,30 @@ photoInput.onchange = () => {
     qs('#deleteBtn').style.display = on ? 'inline-block' : 'none';
   }
 
-  // --- очистити форму і поля пошуку
-  function clearAll() {
-    form.reset();
-    form.elements.medNo.value = 'DP-';
-    uidInput.value = '';
-    medInput.value = '';
-    qrBox.innerHTML = '';
-    links.innerHTML = '';
-    setEditMode(false);
+function clearAll () {
+  form.reset();
+  form.elements.medNo.value = 'DP-';
+  uidInput.value = '';
+  medInput.value = '';
+  qrBox.innerHTML = '';
+  links.innerHTML = '';
+  setEditMode(false);
 
-    previewImg.style.display = 'none';
-    previewImg.src = '';
-    links.dataset.prevPhoto = '';
-    photoInput.value = '';    // скидаємо <input type=file>
-  }
+  /* прибираємо ВСІ прев’ю, навіть якщо їх випадково кілька */
+  document.querySelectorAll('#preview').forEach(img=>{
+    img.remove();                 // видалити з DOM
+  });
 
+  /* створюємо порожнє <img> назад (одне) */
+  const newPrev = document.createElement('img');
+  newPrev.id = 'preview';
+  newPrev.style.display='none';
+  newPrev.style.maxWidth='140px';
+  document.querySelector('[name="photoFile"]').after(newPrev);
+
+  photoInput.value = '';
+  links.dataset.prevPhoto = '';
+}
   // --- завантаження JSON сертифікату за UID або мед№
   async function loadCertificate(uid, medNo) {
     let searchUid = uid;
