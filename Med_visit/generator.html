@@ -249,8 +249,7 @@ section.cert-list{
      <input id="photoInput" name="photoFile" type="file"
          accept="image/*">
     </label>
-    <img id="preview" style="max-width:140px;margin-top:8px;display:none">
-
+    
     <label>Position
       <input name="position" required maxlength="50" autocomplete="off" />
     </label>
@@ -299,26 +298,26 @@ const photoInput = qs('#photoInput');   // <input type="file">
 const previewImg = qs('#preview');      // <img id="preview">
 
 photoInput.onchange = () => {
-  const f = photoInput.files[0];
-  if (!f) return;                       // нічого не вибрано
+  const file = photoInput.files[0];
+  if (!file) return;
 
-  /* якщо <img id="preview"> вже видалили – створюємо заново */
+  /* шукаємо існуюче прев’ю або створюємо */
   let img = document.getElementById('preview');
   if (!img) {
     img = document.createElement('img');
     img.id = 'preview';
-    img.style.maxWidth = '140px';
+    img.style.maxWidth  = '140px';
+    img.style.maxHeight = '180px';
     img.style.marginTop = '8px';
-    photoInput.after(img);              // вставляємо одразу під інпутом
+    img.style.borderRadius = '6px';
+    photoInput.after(img);           // ▼ під інпут
   }
 
-  const r = new FileReader();
-  r.onload = e => {
-    img.src = e.target.result;          // data:image/...
-    img.style.display = 'block';
-  };
-  r.readAsDataURL(f);
+  const fr = new FileReader();
+  fr.onload = e => img.src = e.target.result;      // data:image/…
+  fr.readAsDataURL(file);
 };
+
 
 
   let currentUid = null;
@@ -331,7 +330,7 @@ photoInput.onchange = () => {
     qs('#deleteBtn').style.display = on ? 'inline-block' : 'none';
   }
 
-function clearAll() {
+function clearAll () {
   form.reset();
   form.elements.medNo.value = 'DP-';
   uidInput.value = '';
@@ -340,9 +339,11 @@ function clearAll() {
   links.innerHTML = '';
   setEditMode(false);
 
-  document.querySelectorAll('#preview').forEach(img => img.remove());
+  /* видаляємо ВСІ прев’ю, щоб у DOM не лишалось порожніх img */
+  document.querySelectorAll('#preview').forEach(el => el.remove());
 
-  photoInput.value = '';                // очищаємо поле file
+  /* очищаємо саме поле file */
+  photoInput.value = '';
   links.dataset.prevPhoto = '';
 }
 
