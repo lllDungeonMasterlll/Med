@@ -300,14 +300,22 @@ const previewImg = qs('#preview');      // <img id="preview">
 
 photoInput.onchange = () => {
   const f = photoInput.files[0];
-  if (!f) {               // нічого не вибрано
-    previewImg.style.display = 'none';
-    return;
+  if (!f) return;                       // нічого не вибрано
+
+  /* якщо <img id="preview"> вже видалили – створюємо заново */
+  let img = document.getElementById('preview');
+  if (!img) {
+    img = document.createElement('img');
+    img.id = 'preview';
+    img.style.maxWidth = '140px';
+    img.style.marginTop = '8px';
+    photoInput.after(img);              // вставляємо одразу під інпутом
   }
+
   const r = new FileReader();
   r.onload = e => {
-    previewImg.src = e.target.result;   // data:image/…
-    previewImg.style.display = 'block';
+    img.src = e.target.result;          // data:image/...
+    img.style.display = 'block';
   };
   r.readAsDataURL(f);
 };
@@ -323,7 +331,7 @@ photoInput.onchange = () => {
     qs('#deleteBtn').style.display = on ? 'inline-block' : 'none';
   }
 
-function clearAll () {
+function clearAll() {
   form.reset();
   form.elements.medNo.value = 'DP-';
   uidInput.value = '';
@@ -332,21 +340,14 @@ function clearAll () {
   links.innerHTML = '';
   setEditMode(false);
 
-  /* прибираємо ВСІ прев’ю, навіть якщо їх випадково кілька */
-  document.querySelectorAll('#preview').forEach(img=>{
-    img.remove();                 // видалити з DOM
-  });
+  /* видаляємо <img id="preview">, якщо існує */
+  const img = document.getElementById('preview');
+  if (img) img.remove();
 
-  /* створюємо порожнє <img> назад (одне) */
-  const newPrev = document.createElement('img');
-  newPrev.id = 'preview';
-  newPrev.style.display='none';
-  newPrev.style.maxWidth='140px';
-  document.querySelector('[name="photoFile"]').after(newPrev);
-
-  photoInput.value = '';
+  photoInput.value = '';                // очищаємо поле file
   links.dataset.prevPhoto = '';
 }
+
   // --- завантаження JSON сертифікату за UID або мед№
   async function loadCertificate(uid, medNo) {
     let searchUid = uid;
