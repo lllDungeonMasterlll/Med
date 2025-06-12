@@ -468,7 +468,7 @@ clearBtn.onclick    = () => { filterInput.value=''; applyFilter(''); };
 function applyFilter(query){
   const q = query.toLowerCase();
   certListContainer.querySelectorAll('tbody tr').forEach(row=>{
-    const med  = row.children[0].textContent.toLowerCase();  // №
+    const med  = row.children[1].textContent.toLowerCase();  // №
     const name = row.children[2].textContent.toLowerCase();  // Name, surname
     row.style.display =
       q && !med.includes(q) && !name.includes(q) ? 'none' : '';
