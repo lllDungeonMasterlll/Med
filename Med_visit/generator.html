@@ -115,18 +115,18 @@
 
 section.cert-list{
   /* вікно буде ~800 px, по центру, з падінгом */
-  width:   840px;               /* за потреби змініть */
-  max-width: 95vw;              /* щоб не вилізало за екран */
-  margin: 20px auto;            /* ← центрування */
+  width:   840px;              
+  max-width: 95vw;              
+  margin: 20px auto;            
   max-height: 500px;
-  overflow: hidden;             /* приховуємо власний скрол */
+  overflow: hidden;            
   border-radius: 8px;
  
 }
 
 /* внутрішня прокрутка + прилипаюча шапка */
 .cert-list--scroll{
-  overflow: auto;               /* саме тут скрол */
+  overflow: auto;               
   max-height: 500px;
 }
 
@@ -134,7 +134,7 @@ section.cert-list{
 .cert-list table{
   border-collapse:collapse;
   width: 100%;
-  min-width: 820px;             /* ширина, щоб влізли кнопки */
+  min-width: 820px;             
   table-layout:fixed;
 }
 .cert-list th,
@@ -168,10 +168,10 @@ section.cert-list{
 .cert-list td.actions{
   overflow:visible;
   white-space:nowrap;
-  min-width:220px;              /* ← збільшили */
+  min-width:220px;              
 }
 
-/* кнопки лишаються як були */
+
   .cert-list button {
     margin-right: 6px;
     padding: 5px 10px;
@@ -349,8 +349,8 @@ function showPreview(file){
 dropZone.addEventListener('drop',e=>{
   const file = e.dataTransfer.files[0];
   if(file && file.type.startsWith('image/')){
-    showPreview(file);               // показуємо картинку
-    photoInput.value = '';           // щоб не плуталось з вибраним файлом
+    showPreview(file);              
+    photoInput.value = '';           
   }
 });
 
@@ -361,7 +361,7 @@ dropZone.onclick = ()=> photoInput.click();
 
 photoInput.onchange = () => {
   const f = photoInput.files[0];
-  if (!f) return;                       // нічого не вибрано
+  if (!f) return;                       
 
   /* якщо <img id="preview"> вже видалили – створюємо заново */
   let img = document.getElementById('preview');
@@ -370,12 +370,12 @@ photoInput.onchange = () => {
     img.id = 'preview';
     img.style.maxWidth = '140px';
     img.style.marginTop = '8px';
-    photoInput.after(img);              // вставляємо одразу під інпутом
+    photoInput.after(img);              
   }
 
   const r = new FileReader();
   r.onload = e => {
-    img.src = e.target.result;          // data:image/...
+    img.src = e.target.result;          
     img.style.display = 'block';
   };
   r.readAsDataURL(f);
@@ -403,7 +403,7 @@ function clearAll() {
 
   document.querySelectorAll('#preview').forEach(img => img.remove());
 
-  photoInput.value = '';                // очищаємо поле file
+  photoInput.value = '';                
   links.dataset.prevPhoto = '';
 }
 
@@ -450,7 +450,7 @@ function clearAll() {
       if (cert.photo) {
       previewImg.src = cert.photo;
       previewImg.style.display = 'block';
-      links.dataset.prevPhoto   = cert.photo;   // <- запам'ятали
+      links.dataset.prevPhoto   = cert.photo;   
     } else {
       previewImg.style.display = 'none';
       links.dataset.prevPhoto   = '';
@@ -471,7 +471,7 @@ function clearAll() {
   qs('#filterInput').value = '';
 
   certListSection.style.display   = 'block';
-  certListSection.style.visibility = 'hidden';     // ← додано
+  certListSection.style.visibility = 'hidden';     
   certListContainer.innerHTML =
     '<p>Завантаження списку сертифікатів...</p>';
 
@@ -486,7 +486,7 @@ function clearAll() {
 
     if (!list.length){
       certListContainer.innerHTML = '<p>Сертифікатів не знайдено.</p>';
-      certListSection.style.visibility = 'visible';   // показуємо пусте
+      certListSection.style.visibility = 'visible';   
       return;
     }
 
@@ -564,7 +564,7 @@ function applyFilter(query){
             const t = await r.text();
             if (t !== 'ok') throw new Error();
             alert('Сертифікат видалено');
-            showCertList(); // оновити список після видалення
+            showCertList(); 
           } catch {
             alert('❌ Не вдалося видалити (перевірте права папки /certs/)');
           }
@@ -610,9 +610,9 @@ function applyFilter(query){
   
   /* ----- додаємо фото у JSON ----- */
  if (previewImg.style.display === 'block' && previewImg.src){
-  data.photo = previewImg.src;       // фото є (з кнопки або з dnd)
+  data.photo = previewImg.src;       
 } else if (currentUid && links.dataset.prevPhoto) {
-    data.photo = links.dataset.prevPhoto;  // залишаємо попереднє фото
+    data.photo = links.dataset.prevPhoto;  
   }
 
     try {
